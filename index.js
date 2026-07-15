@@ -35,11 +35,26 @@ const app = express();
 // );
 
 const clientUrl = process.env.CLIENT_URL;
+
+// When CLIENT_URL is "*", treat it as "allow all" but we need a proper
+// origin whitelist for credentials to work correctly.
+const corsOrigin = (!clientUrl || clientUrl === "*")
+  ? ["http://localhost:3000", "http://localhost:5173"]
+  : clientUrl.split(",").map((o) => o.trim());
+
 app.use(
   cors({
-    // origin: clientUrl || "*",
-    origin: clientUrl || "http://localhost:5173",
+    origin: corsOrigin,
     credentials: true,
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control",
+      "Pragma",
+      "x-tenant-id",
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    optionsSuccessStatus: 200,
   }),
 );
 

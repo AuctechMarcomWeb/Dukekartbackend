@@ -1,6 +1,6 @@
-# AVR Backend API
+# CART Backend API
 
-Node.js + Express + MongoDB backend for the AVR Interior Design platform. Handles authentication, content management (blogs, gallery, portfolio, sliders, testimonials), contact & booking forms, image uploads, and an admin dashboard.
+Node.js + Express + MongoDB backend for the CART Interior Design platform. Handles authentication, content management (blogs, gallery, portfolio, sliders, testimonials), contact & booking forms, image uploads, and an admin dashboard.
 
 ---
 
