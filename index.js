@@ -6,6 +6,7 @@ import authRoutes from "./router/authRoutes.js";
 import uploadRoutes from "./router/uploadRoutes.js";
 import homeSliderRoutes from "./router/homeSliderRoutes.js";
 import dashboardRoutes from "./router/dashboardRoutes.js";
+import categoryRoutes from "./router/categoryRoutes.js";
 import { generalLimiter, authLimiter } from "./middlewares/rateLimiter.js";
 // Load environment variables
 dotenv.config();
@@ -71,6 +72,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/homeSlider", homeSliderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/category", categoryRoutes);
 
 const PORT = process.env.PORT || 5000;
 // Start the server and connect to the database
