@@ -6,6 +6,7 @@ import authRoutes from "./router/authRoutes.js";
 import uploadRoutes from "./router/uploadRoutes.js";
 import homeSliderRoutes from "./router/homeSliderRoutes.js";
 import dashboardRoutes from "./router/dashboardRoutes.js";
+import categoryRoutes from "./router/categoryRoutes.js";
 import { generalLimiter, authLimiter } from "./middlewares/rateLimiter.js";
 // Load environment variables
 dotenv.config();
@@ -35,11 +36,26 @@ const app = express();
 // );
 
 const clientUrl = process.env.CLIENT_URL;
+
+// When CLIENT_URL is "*", treat it as "allow all" but we need a proper
+// origin whitelist for credentials to work correctly.
+const corsOrigin = (!clientUrl || clientUrl === "*")
+  ? ["http://localhost:3000", "http://localhost:5173"]
+  : clientUrl.split(",").map((o) => o.trim());
+
 app.use(
   cors({
-    // origin: clientUrl || "*",
-    origin: clientUrl || "http://localhost:5173",
+    origin: corsOrigin,
     credentials: true,
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+      "Cache-Control",
+      "Pragma",
+      "x-tenant-id",
+    ],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    optionsSuccessStatus: 200,
   }),
 );
 
@@ -56,6 +72,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/homeSlider", homeSliderRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/category", categoryRoutes);
 
 const PORT = process.env.PORT || 5000;
 // Start the server and connect to the database
