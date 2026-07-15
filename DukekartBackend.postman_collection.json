@@ -1,0 +1,398 @@
+{
+  "info": {
+    "name": "Dukekart Backend",
+    "_postman_id": "dukekart-backend-collection",
+    "description": "Complete API collection for Dukekart Backend — Auth, Upload, Home Slider, and Dashboard.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "AUTH_TOKEN",
+      "value": "",
+      "type": "string",
+      "description": "Paste the authToken returned from verifyOtp or loginWithPassword here."
+    },
+    {
+      "key": "USER_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "SLIDER_ID",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register or Login (OTP)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/registerOrLogin", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "registerOrLogin"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.authToken) {",
+                  "  pm.collectionVariables.set('AUTH_TOKEN', res.data.authToken);",
+                  "  pm.collectionVariables.set('USER_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/verifyOtp", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "verifyOtp"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"otp\": \"1234\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/resendOtp", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "resendOtp"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login with Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data.authToken) {",
+                  "  pm.collectionVariables.set('AUTH_TOKEN', res.data.authToken);",
+                  "  pm.collectionVariables.set('USER_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/loginWithPassword", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "loginWithPassword"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"password\": \"MyPassword@123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/profile", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "profile"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/auth/createPassword", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "createPassword"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"password\": \"MyPassword@123\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/auth/updatePassword", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "updatePassword"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"oldPassword\": \"MyPassword@123\",\n  \"newPassword\": \"NewPassword@456\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/auth/resetPassword", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "resetPassword"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876543210\",\n  \"password\": \"ResetPassword@789\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/auth/createUser", "host": ["{{BASE_URL}}"], "path": ["api", "auth", "createUser"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"phone\": \"9000000001\",\n  \"email\": \"john@example.com\",\n  \"gender\": \"Male\",\n  \"dob\": \"1995-06-15\",\n  \"role\": \"User\",\n  \"address\": \"123 Main Street\",\n  \"occupation\": \"Developer\",\n  \"password\": \"Admin@1234\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/getAllUsers?page=1&limit=10&sortBy=recent",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "getAllUsers"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sortBy", "value": "recent", "description": "recent | oldest" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "isPagination", "value": "true", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User by ID",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/update/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "update", "{{USER_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"gender\": \"Female\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/updateRole/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "updateRole", "{{USER_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"Admin\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/auth/delete/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "auth", "delete", "{{USER_ID}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{BASE_URL}}/api/upload/uploadImage", "host": ["{{BASE_URL}}"], "path": ["api", "upload", "uploadImage"] },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": "",
+                  "description": "Select an image file (jpg, png, webp, etc.)"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Home Slider",
+      "item": [
+        {
+          "name": "Get All Sliders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider?page=1&limit=10&sortBy=recent",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "sortBy", "value": "recent", "description": "recent | oldest" },
+                { "key": "isActive", "value": "true", "disabled": true, "description": "true | false" },
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "isPagination", "value": "true", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slider by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider/{{SLIDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider", "{{SLIDER_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Slider (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('SLIDER_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/homeSlider", "host": ["{{BASE_URL}}"], "path": ["api", "homeSlider"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"title\": \"Summer Sale\",\n  \"heading\": \"Up to 50% Off\",\n  \"subHeading\": \"Shop the latest trends\",\n  \"isActive\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Slider (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider/{{SLIDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider", "{{SLIDER_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"heading\": \"New Heading\",\n  \"isActive\": false\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Slider (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider/{{SLIDER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider", "{{SLIDER_ID}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{BASE_URL}}/api/dashboard", "host": ["{{BASE_URL}}"], "path": ["api", "dashboard"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
