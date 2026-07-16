@@ -26,6 +26,22 @@
       "key": "SLIDER_ID",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "CATEGORY_ID",
+      "value": "",
+      "type": "string",
+      "description": "Paste a Category _id here before creating products"
+    },
+    {
+      "key": "PRODUCT_ID",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "SLOT_ID",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -432,6 +448,264 @@
             "method": "GET",
             "header": [],
             "url": { "raw": "{{BASE_URL}}/api/dashboard", "host": ["{{BASE_URL}}"], "path": ["api", "dashboard"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Delivery Slots",
+      "item": [
+        {
+          "name": "Get All Slots (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot"],
+              "query": [
+                { "key": "isActive", "value": "true",   "disabled": true, "description": "true | false" },
+                { "key": "sortBy",   "value": "recent",  "disabled": true, "description": "recent | oldest" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Slots (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot/active",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot", "active"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Slot by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot/{{SLOT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot", "{{SLOT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Slot (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('SLOT_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/deliverySlot", "host": ["{{BASE_URL}}"], "path": ["api", "deliverySlot"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Morning\",\n  \"time\": \"7:00 AM – 10:00 AM\",\n  \"maxOrders\": 50,\n  \"deliveryCharge\": 0,\n  \"minOrderAmount\": 0,\n  \"availableDays\": [\"Mon\", \"Tue\", \"Wed\", \"Thu\", \"Fri\", \"Sat\", \"Sun\"],\n  \"color\": \"#f97316\",\n  \"isActive\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Slot (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot/{{SLOT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot", "{{SLOT_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"Morning (Updated)\",\n  \"deliveryCharge\": 15,\n  \"minOrderAmount\": 149,\n  \"maxOrders\": 60\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Slot Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot/{{SLOT_ID}}/toggle",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot", "{{SLOT_ID}}", "toggle"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Slot (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/deliverySlot/{{SLOT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "deliverySlot", "{{SLOT_ID}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Get All Products (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product?page=1&limit=10&sortBy=recent",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product"],
+              "query": [
+                { "key": "page",         "value": "1" },
+                { "key": "limit",        "value": "10" },
+                { "key": "sortBy",       "value": "recent", "description": "recent | oldest | priceAsc | priceDesc | ratingDesc | stockAsc" },
+                { "key": "search",       "value": "", "disabled": true, "description": "Search by name, description, tags" },
+                { "key": "category",     "value": "", "disabled": true, "description": "Category ObjectId" },
+                { "key": "status",       "value": "Active", "disabled": true, "description": "Active | Inactive | Low Stock | Out of Stock" },
+                { "key": "isActive",     "value": "true", "disabled": true },
+                { "key": "isPagination", "value": "true", "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Active Products (Web/Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product/active",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product", "active"],
+              "query": [
+                { "key": "category", "value": "", "disabled": true, "description": "Filter by Category ObjectId" },
+                { "key": "sortBy",   "value": "recent", "disabled": true, "description": "recent | priceAsc | priceDesc | ratingDesc" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product/{{PRODUCT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product", "{{PRODUCT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Product (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('PRODUCT_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/product", "host": ["{{BASE_URL}}"], "path": ["api", "product"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chicken Curry Cut\",\n  \"category\": \"{{CATEGORY_ID}}\",\n  \"weight\": \"500g\",\n  \"price\": 199,\n  \"originalPrice\": 260,\n  \"description\": \"Fresh chicken curry cut pieces, cleaned and ready to cook.\",\n  \"image\": \"https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=200\",\n  \"images\": [\n    \"https://images.unsplash.com/photo-1587593810167-a84920ea0781?w=200\",\n    \"https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=200\"\n  ],\n  \"nutrition\": {\n    \"calories\": 165,\n    \"protein\": 31,\n    \"carbs\": 0,\n    \"fat\": 3.6,\n    \"fiber\": 0\n  },\n  \"stock\": 45,\n  \"rating\": 4.6,\n  \"reviewCount\": 128,\n  \"status\": \"Active\",\n  \"tags\": [\"bestseller\", \"halal\"],\n  \"allowedSlots\": [\"s1\", \"s2\", \"s3\"],\n  \"isHalal\": true,\n  \"isFresh\": true,\n  \"inStock\": true,\n  \"deliveryTime\": \"30-40 min\",\n  \"weightVariants\": [\n    { \"label\": \"250g\", \"price\": 99,  \"original\": 130 },\n    { \"label\": \"500g\", \"price\": 199, \"original\": 260 },\n    { \"label\": \"1kg\",  \"price\": 389, \"original\": 500 },\n    { \"label\": \"2kg\",  \"price\": 769, \"original\": 980 }\n  ]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Product (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product/{{PRODUCT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product", "{{PRODUCT_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Chicken Curry Cut (Updated)\",\n  \"price\": 210,\n  \"stock\": 50,\n  \"status\": \"Active\",\n  \"tags\": [\"bestseller\", \"halal\", \"fresh\"]\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Product Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product/{{PRODUCT_ID}}/toggle",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product", "{{PRODUCT_ID}}", "toggle"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Product (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/product/{{PRODUCT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "product", "{{PRODUCT_ID}}"]
+            }
           },
           "response": []
         }
