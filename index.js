@@ -49,19 +49,26 @@ const defaultCorsOrigins = [
   "http://127.0.0.1:5173",
   "http://localhost:5174",
   "http://127.0.0.1:5174",
+  "http://192.168.1.29:3000",
+  "http://192.168.1.29:3001",
 ];
 
 const corsOrigin = (!clientUrl || clientUrl === "*")
   ? defaultCorsOrigins
   : [...new Set([...defaultCorsOrigins, ...clientUrl.split(",").map((o) => o.trim()).filter(Boolean)])];
 
+const isAllowedOrigin = (origin) => {
+  if (!origin) return true;
+  return corsOrigin.includes(origin) || /^http:\/\/192\.168\.[0-9]+\.[0-9]+:\d+$/.test(origin);
+};
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || corsOrigin.includes(origin)) {
+      if (isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
-        callback(null, true);
+        callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true,
