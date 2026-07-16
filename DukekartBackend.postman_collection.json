@@ -42,6 +42,11 @@
       "key": "SLOT_ID",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "COUPON_ID",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
@@ -448,6 +453,136 @@
             "method": "GET",
             "header": [],
             "url": { "raw": "{{BASE_URL}}/api/dashboard", "host": ["{{BASE_URL}}"], "path": ["api", "dashboard"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Coupons",
+      "item": [
+        {
+          "name": "Get All Coupons (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/coupon?page=1&limit=20&sortBy=recent",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "coupon"],
+              "query": [
+                { "key": "page",         "value": "1" },
+                { "key": "limit",        "value": "20" },
+                { "key": "sortBy",       "value": "recent", "description": "recent | oldest | expiryAsc | expiryDesc | usageDesc" },
+                { "key": "active",       "value": "true",   "disabled": true },
+                { "key": "type",         "value": "flat",   "disabled": true, "description": "flat | percent" },
+                { "key": "search",       "value": "",       "disabled": true },
+                { "key": "isPagination", "value": "true",   "disabled": true }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Coupon by ID or Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/coupon/{{COUPON_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "coupon", "{{COUPON_ID}}"],
+              "description": "Pass MongoDB _id OR coupon code e.g. DUKE50"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Validate Coupon (Checkout)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{BASE_URL}}/api/coupon/validate", "host": ["{{BASE_URL}}"], "path": ["api", "coupon", "validate"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"DUKE50\",\n  \"cartTotal\": 499\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Coupon (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.data && res.data._id) {",
+                  "  pm.collectionVariables.set('COUPON_ID', res.data._id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": { "raw": "{{BASE_URL}}/api/coupon", "host": ["{{BASE_URL}}"], "path": ["api", "coupon"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"code\": \"DUKE50\",\n  \"type\": \"flat\",\n  \"value\": 50,\n  \"minOrder\": 299,\n  \"maxDiscount\": 50,\n  \"usageLimit\": 500,\n  \"desc\": \"Flat ₹50 off on orders above ₹299\",\n  \"expiry\": \"2025-07-31\",\n  \"active\": true\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Coupon (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type",  "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/coupon/{{COUPON_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "coupon", "{{COUPON_ID}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"value\": 75,\n  \"usageLimit\": 600,\n  \"expiry\": \"2025-12-31\"\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Coupon Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/coupon/{{COUPON_ID}}/toggle",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "coupon", "{{COUPON_ID}}", "toggle"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Coupon (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
+            "url": {
+              "raw": "{{BASE_URL}}/api/coupon/{{COUPON_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "coupon", "{{COUPON_ID}}"]
+            }
           },
           "response": []
         }

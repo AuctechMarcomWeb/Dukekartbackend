@@ -7,11 +7,12 @@ import uploadRoutes from "./router/uploadRoutes.js";
 import homeSliderRoutes from "./router/homeSliderRoutes.js";
 import dashboardRoutes from "./router/dashboardRoutes.js";
 import categoryRoutes from "./router/categoryRoutes.js";
-import productRoutes        from "./router/productRoutes.js";
+import productRoutes       from "./router/productRoutes.js";
 import deliverySlotRoutes  from "./router/deliverySlotRoutes.js";
-import { generalLimiter, authLimiter } from "./middlewares/rateLimiter.js";
-// Load environment variables
+import couponRoutes        from "./router/couponRoutes.js";
+
 dotenv.config();
+
 const app = express();
 
 // CORS Configuration
@@ -64,16 +65,10 @@ app.use(
       }
     },
     credentials: true,
-    allowedHeaders: [
-      "Content-Type",
-      "Authorization",
-      "Cache-Control",
-      "Pragma",
-      "x-tenant-id",
-    ],
+    allowedHeaders: ["Content-Type", "Authorization", "Cache-Control", "Pragma", "x-tenant-id"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     optionsSuccessStatus: 200,
-  }),
+  })
 );
 
 
@@ -81,21 +76,17 @@ app.use(
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-// Rate Limiters
-// app.use("/api/auth", authLimiter);   // strict — OTP/login routes
-// app.use("/api", generalLimiter);     // general — baaki sab routes
-
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/upload", uploadRoutes);
-app.use("/api/homeSlider", homeSliderRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/category", categoryRoutes);
-app.use("/api/product",       productRoutes);
-app.use("/api/deliverySlot",  deliverySlotRoutes);
+// ── Routes ────────────────────────────────────────────────────────────────────
+app.use("/api/auth",         authRoutes);
+app.use("/api/upload",       uploadRoutes);
+app.use("/api/homeSlider",   homeSliderRoutes);
+app.use("/api/dashboard",    dashboardRoutes);
+app.use("/api/category",     categoryRoutes);
+app.use("/api/product",      productRoutes);
+app.use("/api/deliverySlot", deliverySlotRoutes);
+app.use("/api/coupon",       couponRoutes);
 
 const PORT = process.env.PORT || 5000;
-// Start the server and connect to the database
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   connectDB();
