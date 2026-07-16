@@ -279,10 +279,10 @@
       ]
     },
     {
-      "name": "Home Slider",
+      "name": "Home Slider (Banners)",
       "item": [
         {
-          "name": "Get All Sliders",
+          "name": "Get All Banners",
           "request": {
             "method": "GET",
             "header": [],
@@ -293,9 +293,11 @@
               "query": [
                 { "key": "page", "value": "1" },
                 { "key": "limit", "value": "10" },
-                { "key": "sortBy", "value": "recent", "description": "recent | oldest" },
-                { "key": "isActive", "value": "true", "disabled": true, "description": "true | false" },
-                { "key": "search", "value": "", "disabled": true },
+                { "key": "sortBy", "value": "recent", "description": "recent | oldest | startDateAsc | startDateDesc | endDateAsc" },
+                { "key": "active", "value": "true", "disabled": true, "description": "true | false" },
+                { "key": "placement", "value": "Home Top", "disabled": true, "description": "Home Top | Home Middle | Home Bottom | Category Page | Checkout Page" },
+                { "key": "currentlyValid", "value": "true", "disabled": true, "description": "true = only active banners within date range" },
+                { "key": "search", "value": "", "disabled": true, "description": "Search by title, subtitle, offer, placement etc." },
                 { "key": "isPagination", "value": "true", "disabled": true }
               ]
             }
@@ -303,20 +305,37 @@
           "response": []
         },
         {
-          "name": "Get Slider by ID",
+          "name": "Get Active Banners (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider/active",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider", "active"],
+              "query": [
+                { "key": "placement", "value": "Home Top", "disabled": true, "description": "Filter by placement" }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Banner by ID",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{BASE_URL}}/api/homeSlider/{{SLIDER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "homeSlider", "{{SLIDER_ID}}"]
+              "path": ["api", "homeSlider", "{{SLIDER_ID}}"],
+              "description": "Pass MongoDB _id or custom banner id (e.g. b1)"
             }
           },
           "response": []
         },
         {
-          "name": "Create Slider (Admin)",
+          "name": "Create Banner (Admin)",
           "event": [
             {
               "listen": "test",
@@ -337,16 +356,20 @@
               { "key": "Content-Type", "value": "application/json" },
               { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
             ],
-            "url": { "raw": "{{BASE_URL}}/api/homeSlider", "host": ["{{BASE_URL}}"], "path": ["api", "homeSlider"] },
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider"]
+            },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"image\": \"https://res.cloudinary.com/demo/image/upload/sample.jpg\",\n  \"title\": \"Summer Sale\",\n  \"heading\": \"Up to 50% Off\",\n  \"subHeading\": \"Shop the latest trends\",\n  \"isActive\": true\n}"
+              "raw": "{\n  \"id\": \"b1\",\n  \"title\": \"Fresh & Quality\",\n  \"subtitle\": \"Non-Veg Items\",\n  \"offer\": \"UP TO 20% OFF\",\n  \"cta\": \"Shop Now\",\n  \"image\": \"https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=700\",\n  \"link\": \"/products?cat=Chicken\",\n  \"placement\": \"Home Top\",\n  \"active\": true,\n  \"startDate\": \"2025-07-01\",\n  \"endDate\": \"2025-07-31\"\n}"
             }
           },
           "response": []
         },
         {
-          "name": "Update Slider (Admin)",
+          "name": "Update Banner (Admin)",
           "request": {
             "method": "PUT",
             "header": [
@@ -360,13 +383,33 @@
             },
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Title\",\n  \"heading\": \"New Heading\",\n  \"isActive\": false\n}"
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"subtitle\": \"Updated Subtitle\",\n  \"offer\": \"FLAT 30% OFF\",\n  \"cta\": \"Order Now\",\n  \"image\": \"https://images.unsplash.com/photo-1540420773420-3366772f4999?w=700\",\n  \"link\": \"/products?cat=Vegetables\",\n  \"placement\": \"Home Middle\",\n  \"active\": true,\n  \"startDate\": \"2025-07-05\",\n  \"endDate\": \"2025-07-20\"\n}"
             }
           },
           "response": []
         },
         {
-          "name": "Delete Slider (Admin)",
+          "name": "Update Banner Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }
+            ],
+            "url": {
+              "raw": "{{BASE_URL}}/api/homeSlider/{{SLIDER_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "homeSlider", "{{SLIDER_ID}}", "status"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false\n}"
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Banner (Admin)",
           "request": {
             "method": "DELETE",
             "header": [{ "key": "Authorization", "value": "Bearer {{AUTH_TOKEN}}" }],
