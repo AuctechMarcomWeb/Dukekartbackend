@@ -1,27 +1,69 @@
 import mongoose from "mongoose";
 import Product  from "../models/Product.modal.js";
 import Category from "../models/Category.modal.js";
+import DeliverySlot from "../models/DeliverySlot.modal.js";
 import { apiResponse }  from "../utils/apiResponse.js";
 import { asyncHandler } from "../utils/asynchandler.js";
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
 
+const validateDeliverySlots = async (slots = []) => {
+  // single id ko array me convert karega
+  if (!Array.isArray(slots)) {
+    slots = [slots];
+  }
+  // empty allowed
+  if (slots.length === 0) {
+    return [];
+  }
+  const validSlots = await DeliverySlot.find({
+    _id: {
+      $in: slots
+    }
+  });
+  if (validSlots.length !== slots.length) {
+    throw new Error(
+      "One or more delivery slots not found"
+    );
+  }
+  return slots;
+};
+
+// ─── CREATE PRODUCT ───────────────────────────────────────────────────────────
 // ─── CREATE PRODUCT ───────────────────────────────────────────────────────────
 const createProduct = asyncHandler(async (req, res) => {
   const {
-    name, category, weight, weightVariants,
-    price, originalPrice, description, image, images,
-    stock, rating, reviewCount, status, tags, allowedSlots,
-    isHalal, isFresh, inStock, deliveryTime, nutrition,
+    name,
+    category,
+    weight,
+    weightVariants,
+    price,
+    originalPrice,
+    description,
+    image,
+    images,
+    stock,
+    rating,
+    reviewCount,
+    status,
+    tags,
+    allowedSlots,
+    isHalal,
+    isFresh,
+    inStock,
+    deliveryTime,
+    nutrition,
   } = req.body;
 
 
+  // Required validations
   if (!name?.trim()) {
     return res.status(400).json(
       new apiResponse(400, null, "Product name is required")
     );
   }
+
 
   if (!category) {
     return res.status(400).json(
@@ -29,11 +71,13 @@ const createProduct = asyncHandler(async (req, res) => {
     );
   }
 
+
   if (!isValidObjectId(category)) {
     return res.status(400).json(
       new apiResponse(400, null, "Invalid category ID")
     );
   }
+
 
   if (price === undefined || price === null || price === "") {
     return res.status(400).json(
@@ -42,14 +86,16 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 
 
-  // Verify category exists
+  // Check category exists
   const categoryDoc = await Category.findById(category);
+
 
   if (!categoryDoc) {
     return res.status(404).json(
       new apiResponse(404, null, "Category not found")
     );
   }
+
 
   if (!categoryDoc.isActive) {
     return res.status(400).json(
@@ -58,10 +104,8 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 
 
-  // ==============================
-  // Duplicate Product Check
-  // ==============================
 
+  // Duplicate Product Check
   const existingProduct = await Product.findOne({
     name: {
       $regex: `^${name.trim()}$`,
@@ -83,6 +127,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
 
+  // Normalize tags
   const tagsArr = Array.isArray(tags)
     ? tags.map((t) => t.trim()).filter(Boolean)
     : typeof tags === "string"
@@ -91,52 +136,106 @@ const createProduct = asyncHandler(async (req, res) => {
 
 
 
+  // Create Product
   const product = await Product.create({
 
     name: name.trim(),
 
     category,
 
+
     weight: weight?.trim() || "",
 
-    weightVariants: weightVariants || [],
+
+    weightVariants:
+      Array.isArray(weightVariants)
+        ? weightVariants
+        : [],
+
 
     price: Number(price),
 
-    originalPrice: Number(originalPrice || 0),
 
-    description: description?.trim() || "",
+    originalPrice:
+      Number(originalPrice || 0),
 
-    image: image?.trim() || "",
 
-    images: Array.isArray(images) ? images : [],
+    description:
+      description?.trim() || "",
 
-    nutrition: nutrition || {},
 
-    stock: Number(stock || 0),
+    image:
+      image?.trim() || "",
 
-    rating: Number(rating || 0),
 
-    reviewCount: Number(reviewCount || 0),
+    images:
+      Array.isArray(images)
+        ? images
+        : [],
 
-    status: status || "Active",
+
+    nutrition:
+      nutrition || {},
+
+
+    stock:
+      Number(stock || 0),
+
+
+    rating:
+      Number(rating || 0),
+
+
+    reviewCount:
+      Number(reviewCount || 0),
+
+
+    status:
+      status || "Active",
+
 
     tags: tagsArr,
 
-    allowedSlots: allowedSlots || [],
 
-    isHalal: isHalal ?? false,
+    // Multiple Delivery Slots Support
+    allowedSlots:
+      Array.isArray(allowedSlots)
+        ? allowedSlots
+        : [],
 
-    isFresh: isFresh ?? true,
 
-    inStock: inStock ?? true,
+    isHalal:
+      isHalal ?? false,
 
-    deliveryTime: deliveryTime?.trim() || "30-40 min",
+
+    isFresh:
+      isFresh ?? true,
+
+
+    inStock:
+      inStock ?? true,
+
+
+    deliveryTime:
+      deliveryTime?.trim() || "30-40 min",
 
   });
 
 
-  await product.populate("category", "name image");
+
+  // Populate response
+  await product.populate([
+    {
+      path: "category",
+      select: "name image isActive",
+    },
+    {
+      path: "allowedSlots",
+      select:
+        "label time deliveryCharge minOrderAmount availableDays color isActive",
+    },
+  ]);
+
 
 
   return res.status(201).json(
@@ -148,6 +247,8 @@ const createProduct = asyncHandler(async (req, res) => {
   );
 
 });
+
+
 // ─── GET ALL PRODUCTS (paginated, filterable, searchable) ─────────────────────
 const getAllProducts = asyncHandler(async (req, res) => {
   const {
@@ -206,7 +307,8 @@ const getAllProducts = asyncHandler(async (req, res) => {
   const totalProducts = await Product.countDocuments(filter);
 
   let query = Product.find(filter)
-    .populate("category", "name image isActive")
+    .populate("category",     "name image isActive")
+    .populate("allowedSlots", "label time deliveryCharge minOrderAmount availableDays color isActive")
     .sort(sort);
 
   if (isPagination === "true") {
@@ -247,7 +349,8 @@ const getActiveProducts = asyncHandler(async (req, res) => {
 
   // Only products whose category is also active
   const products = await Product.find(filter)
-    .populate({ path: "category", match: { isActive: true }, select: "name image" })
+    .populate({ path: "category",     match: { isActive: true }, select: "name image" })
+    .populate({ path: "allowedSlots", match: { isActive: true }, select: "label time deliveryCharge minOrderAmount availableDays color" })
     .sort(sort)
     .lean();
 
@@ -268,7 +371,8 @@ const getProductById = asyncHandler(async (req, res) => {
   }
 
   const product = await Product.findById(id)
-    .populate("category", "name image isActive")
+    .populate("category",     "name image isActive")
+    .populate("allowedSlots", "label time deliveryCharge minOrderAmount availableDays color isActive")
     .lean();
 
   if (!product) {
@@ -329,7 +433,8 @@ const updateProduct = asyncHandler(async (req, res) => {
   }
 
   const updated = await product.save();
-  await updated.populate("category", "name image");
+  await updated.populate("category",     "name image");
+  await updated.populate("allowedSlots", "label time deliveryCharge minOrderAmount availableDays color isActive");
 
   return res.status(200).json(new apiResponse(200, updated, "Product updated successfully"));
 });

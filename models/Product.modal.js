@@ -119,9 +119,9 @@ const productSchema = new mongoose.Schema(
     },
 
     // ── Delivery ─────────────────────────────────────────────────────────────
-    // Delivery slot IDs e.g. ["s1","s2","s3"]
+    // References to DeliverySlot documents — populated when fetched
     allowedSlots: {
-      type: [String],
+      type: [{ type: mongoose.Schema.Types.ObjectId, ref: "DeliverySlot" }],
       default: [],
     },
 
