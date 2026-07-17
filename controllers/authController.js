@@ -262,19 +262,20 @@ const getAllUsers = asyncHandler(async (req, res) => {
       limit = 10,
       search,
       sortBy = "recent",
+      role,
     } = req.query;
-
     const match = {};
-
+        // Role filter
+    if (role) {
+      match.role = role;
+    }
     let pipeline = [{ $match: match }];
-
     // Global text search
     if (search) {
       const words = search
         .trim()
         .split(/\s+/)
         .map((word) => new RegExp(word.replace(/’/g, "'"), "i"));
-
       const orConditions = words.flatMap((regex) => [
         { name: { $regex: regex } },
         { phone: { $regex: regex } },
