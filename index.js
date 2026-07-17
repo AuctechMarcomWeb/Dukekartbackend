@@ -10,7 +10,7 @@ import categoryRoutes from "./router/categoryRoutes.js";
 import productRoutes       from "./router/productRoutes.js";
 import deliverySlotRoutes  from "./router/deliverySlotRoutes.js";
 import couponRoutes        from "./router/couponRoutes.js";
-
+import orderRoutes from "./router/Order/orderRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -92,7 +92,7 @@ app.use("/api/category",     categoryRoutes);
 app.use("/api/product",      productRoutes);
 app.use("/api/deliverySlot", deliverySlotRoutes);
 app.use("/api/coupon",       couponRoutes);
-
+app.use("/api/orders",orderRoutes);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
