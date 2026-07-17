@@ -2,15 +2,21 @@ import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import cors from "cors";
-import authRoutes from "./router/authRoutes.js";
-import uploadRoutes from "./router/uploadRoutes.js";
-import homeSliderRoutes from "./router/homeSliderRoutes.js";
-import dashboardRoutes from "./router/dashboardRoutes.js";
-import categoryRoutes from "./router/categoryRoutes.js";
-import productRoutes       from "./router/productRoutes.js";
-import deliverySlotRoutes  from "./router/deliverySlotRoutes.js";
-import couponRoutes        from "./router/couponRoutes.js";
-import orderRoutes from "./router/Order/orderRoutes.js"
+import authRoutes         from "./router/authRoutes.js";
+import uploadRoutes       from "./router/uploadRoutes.js";
+import homeSliderRoutes   from "./router/homeSliderRoutes.js";
+import dashboardRoutes    from "./router/dashboardRoutes.js";
+import categoryRoutes     from "./router/categoryRoutes.js";
+import productRoutes      from "./router/productRoutes.js";
+import deliverySlotRoutes from "./router/deliverySlotRoutes.js";
+import couponRoutes       from "./router/couponRoutes.js";
+import orderRoutes        from "./router/Order/orderRoutes.js";
+import addressRoutes      from "./router/addressRoutes.js";
+import walletRoutes       from "./router/walletRoutes.js";
+import wishlistRoutes     from "./router/wishlistRoutes.js";
+import reviewRoutes       from "./router/reviewRoutes.js";
+import notificationRoutes from "./router/notificationRoutes.js";
+import { startCronJobs }  from "./utils/cronJobs.js";
 dotenv.config();
 
 const app = express();
@@ -84,17 +90,24 @@ app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
 // ── Routes ────────────────────────────────────────────────────────────────────
-app.use("/api/auth",         authRoutes);
-app.use("/api/upload",       uploadRoutes);
-app.use("/api/homeSlider",   homeSliderRoutes);
-app.use("/api/dashboard",    dashboardRoutes);
-app.use("/api/category",     categoryRoutes);
-app.use("/api/product",      productRoutes);
-app.use("/api/deliverySlot", deliverySlotRoutes);
-app.use("/api/coupon",       couponRoutes);
-app.use("/api/orders",orderRoutes);
+app.use("/api/auth",          authRoutes);
+app.use("/api/upload",        uploadRoutes);
+app.use("/api/homeSlider",    homeSliderRoutes);
+app.use("/api/dashboard",     dashboardRoutes);
+app.use("/api/category",      categoryRoutes);
+app.use("/api/product",       productRoutes);
+app.use("/api/deliverySlot",  deliverySlotRoutes);
+app.use("/api/coupon",        couponRoutes);
+app.use("/api/orders",        orderRoutes);
+app.use("/api/address",       addressRoutes);
+app.use("/api/wallet",        walletRoutes);
+app.use("/api/wishlist",      wishlistRoutes);
+app.use("/api/reviews",       reviewRoutes);
+app.use("/api/notifications", notificationRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   connectDB();
+  startCronJobs();
 });

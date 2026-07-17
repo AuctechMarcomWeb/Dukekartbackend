@@ -369,15 +369,37 @@ export const createOrder = async (req, res) => {
     |--------------------------------------------------------------------------
     | PayU case
     |--------------------------------------------------------------------------
-    | PayU ke liye yahan txnid aur hash generate karke gatewayData me return hoga.
     */
     if (paymentMethod === "PayU") {
-      gatewayOrderId = `PAYU_${Date.now()}`;
+      if (!process.env.PAYU_KEY || !process.env.PAYU_SALT) {
+        throw new Error("PayU credentials missing in environment variables");
+      }
 
-      // PayU hash generation yahan add karein.
+      gatewayOrderId = `PAYU_${Date.now()}_${userId}`;
+
+      const payuKey     = process.env.PAYU_KEY;
+      const payuSalt    = process.env.PAYU_SALT;
+      const amount      = calculation.amounts.finalAmount.toFixed(2);
+      const productinfo = `DukekartOrder_${orderId}`;
+      const firstname   = req.user.name || "Customer";
+      const email       = req.user.email || "customer@dukekart.com";
+
+      // PayU forward hash: key|txnid|amount|productinfo|firstname|email|||||||||||salt
+      const hashString = `${payuKey}|${gatewayOrderId}|${amount}|${productinfo}|${firstname}|${email}|||||||||||${payuSalt}`;
+      const hash = crypto.createHash("sha512").update(hashString).digest("hex");
+
       gatewayData = {
-        txnid: gatewayOrderId,
-        amount: calculation.amounts.finalAmount,
+        key:         payuKey,
+        txnid:       gatewayOrderId,
+        amount,
+        productinfo,
+        firstname,
+        email,
+        phone:       req.user.phone || "",
+        surl:        `${process.env.APP_URL || "http://localhost:5000"}/api/orders/payment/payu/verify`,
+        furl:        `${process.env.APP_URL || "http://localhost:5000"}/api/orders/payment/payu/verify`,
+        hash,
+        service_provider: "payu_paisa",
       };
     }
 

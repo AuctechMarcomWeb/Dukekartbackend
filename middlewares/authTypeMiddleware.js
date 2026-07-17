@@ -6,7 +6,11 @@ import User from "../models/User.modal.js";
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
     // Get the token from cookies or Authorization header
-    const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
+    // Support both "Bearer <token>" and raw token formats
+    const authHeader = req.header("Authorization");
+    const token =
+      req.cookies?.accessToken ||
+      (authHeader?.startsWith("Bearer ") ? authHeader.replace("Bearer ", "") : authHeader);
 
    
 
