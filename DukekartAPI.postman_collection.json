@@ -1,0 +1,556 @@
+{
+  "info": {
+    "name": "Dukekart API",
+    "_postman_id": "dukekart-api-collection",
+    "description": "Complete API collection for Dukekart Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register or Login (OTP)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/registerOrLogin", "host": ["{{baseUrl}}"], "path": ["auth","registerOrLogin"] },
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"9876543210\"\n}" }
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/verifyOtp", "host": ["{{baseUrl}}"], "path": ["auth","verifyOtp"] },
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"9876543210\",\n  \"otp\": \"1234\"\n}" }
+          }
+        },
+        {
+          "name": "Resend OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/resendOtp", "host": ["{{baseUrl}}"], "path": ["auth","resendOtp"] },
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"9876543210\"\n}" }
+          }
+        },
+        {
+          "name": "Login with Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/loginWithPassword", "host": ["{{baseUrl}}"], "path": ["auth","loginWithPassword"] },
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"9876543210\",\n  \"password\": \"mypassword\"\n}" }
+          }
+        },
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/profile", "host": ["{{baseUrl}}"], "path": ["auth","profile"] }
+          }
+        },
+        {
+          "name": "Create Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/createPassword", "host": ["{{baseUrl}}"], "path": ["auth","createPassword"] },
+            "body": { "mode": "raw", "raw": "{\n  \"password\": \"newpassword123\"\n}" }
+          }
+        },
+        {
+          "name": "Update Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/updatePassword", "host": ["{{baseUrl}}"], "path": ["auth","updatePassword"] },
+            "body": { "mode": "raw", "raw": "{\n  \"oldPassword\": \"oldpass\",\n  \"newPassword\": \"newpass123\"\n}" }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/resetPassword", "host": ["{{baseUrl}}"], "path": ["auth","resetPassword"] },
+            "body": { "mode": "raw", "raw": "{\n  \"phone\": \"9876543210\",\n  \"newPassword\": \"newpass123\"\n}" }
+          }
+        },
+        {
+          "name": "Update User By ID",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/update/:id", "host": ["{{baseUrl}}"], "path": ["auth","update",":id"], "variable": [{ "key": "id", "value": "USER_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"John Doe\"\n}" }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/delete/:id", "host": ["{{baseUrl}}"], "path": ["auth","delete",":id"], "variable": [{ "key": "id", "value": "USER_ID" }] }
+          }
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/getAllUsers", "host": ["{{baseUrl}}"], "path": ["auth","getAllUsers"] }
+          }
+        },
+        {
+          "name": "Update User Role",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/updateRole/:userId", "host": ["{{baseUrl}}"], "path": ["auth","updateRole",":userId"], "variable": [{ "key": "userId", "value": "USER_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"role\": \"Admin\"\n}" }
+          }
+        },
+        {
+          "name": "Create User (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/auth/createUser", "host": ["{{baseUrl}}"], "path": ["auth","createUser"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Test User\",\n  \"phone\": \"9876543210\",\n  \"role\": \"User\"\n}" }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/upload/uploadImage", "host": ["{{baseUrl}}"], "path": ["upload","uploadImage"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/dashboard", "host": ["{{baseUrl}}"], "path": ["dashboard"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Home Slider",
+      "item": [
+        {
+          "name": "Get All Sliders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/homeSlider", "host": ["{{baseUrl}}"], "path": ["homeSlider"] }
+          }
+        },
+        {
+          "name": "Get Active Sliders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/homeSlider/active", "host": ["{{baseUrl}}"], "path": ["homeSlider","active"] }
+          }
+        },
+        {
+          "name": "Get Slider By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/homeSlider/:id", "host": ["{{baseUrl}}"], "path": ["homeSlider",":id"], "variable": [{ "key": "id", "value": "SLIDER_ID" }] }
+          }
+        },
+        {
+          "name": "Create Slider",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/homeSlider", "host": ["{{baseUrl}}"], "path": ["homeSlider"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Summer Sale\",\n  \"image\": \"https://example.com/image.jpg\",\n  \"link\": \"/products\",\n  \"isActive\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Slider",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/homeSlider/:id", "host": ["{{baseUrl}}"], "path": ["homeSlider",":id"], "variable": [{ "key": "id", "value": "SLIDER_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Updated Title\"\n}" }
+          }
+        },
+        {
+          "name": "Toggle Slider Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/homeSlider/:id/status", "host": ["{{baseUrl}}"], "path": ["homeSlider",":id","status"], "variable": [{ "key": "id", "value": "SLIDER_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Slider",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/homeSlider/:id", "host": ["{{baseUrl}}"], "path": ["homeSlider",":id"], "variable": [{ "key": "id", "value": "SLIDER_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/category", "host": ["{{baseUrl}}"], "path": ["category"] }
+          }
+        },
+        {
+          "name": "Get Category By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/category/:id", "host": ["{{baseUrl}}"], "path": ["category",":id"], "variable": [{ "key": "id", "value": "CATEGORY_ID" }] }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/category", "host": ["{{baseUrl}}"], "path": ["category"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fruits\",\n  \"image\": \"https://example.com/fruits.jpg\",\n  \"isActive\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/category/:id", "host": ["{{baseUrl}}"], "path": ["category",":id"], "variable": [{ "key": "id", "value": "CATEGORY_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Category\"\n}" }
+          }
+        },
+        {
+          "name": "Toggle Category Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/category/:id/toggle", "host": ["{{baseUrl}}"], "path": ["category",":id","toggle"], "variable": [{ "key": "id", "value": "CATEGORY_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/category/:id", "host": ["{{baseUrl}}"], "path": ["category",":id"], "variable": [{ "key": "id", "value": "CATEGORY_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Product",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/product?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["product"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          }
+        },
+        {
+          "name": "Get Active Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/product/active", "host": ["{{baseUrl}}"], "path": ["product","active"] }
+          }
+        },
+        {
+          "name": "Get Product By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/product/:id", "host": ["{{baseUrl}}"], "path": ["product",":id"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/product", "host": ["{{baseUrl}}"], "path": ["product"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Fresh Apples\",\n  \"category\": \"CATEGORY_ID\",\n  \"price\": 120,\n  \"originalPrice\": 150,\n  \"stock\": 50,\n  \"weight\": \"1kg\",\n  \"status\": \"Active\",\n  \"allowedSlots\": [\"SLOT_ID\"]\n}" }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/product/:id", "host": ["{{baseUrl}}"], "path": ["product",":id"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"price\": 110,\n  \"stock\": 40\n}" }
+          }
+        },
+        {
+          "name": "Toggle Product Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/product/:id/toggle", "host": ["{{baseUrl}}"], "path": ["product",":id","toggle"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/product/:id", "host": ["{{baseUrl}}"], "path": ["product",":id"], "variable": [{ "key": "id", "value": "PRODUCT_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Delivery Slots",
+      "item": [
+        {
+          "name": "Get All Delivery Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/deliverySlot", "host": ["{{baseUrl}}"], "path": ["deliverySlot"] }
+          }
+        },
+        {
+          "name": "Get Active Delivery Slots",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/deliverySlot/active", "host": ["{{baseUrl}}"], "path": ["deliverySlot","active"] }
+          }
+        },
+        {
+          "name": "Get Delivery Slot By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/deliverySlot/:id", "host": ["{{baseUrl}}"], "path": ["deliverySlot",":id"], "variable": [{ "key": "id", "value": "SLOT_ID" }] }
+          }
+        },
+        {
+          "name": "Create Delivery Slot",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/deliverySlot", "host": ["{{baseUrl}}"], "path": ["deliverySlot"] },
+            "body": { "mode": "raw", "raw": "{\n  \"label\": \"Morning\",\n  \"time\": \"8:00 AM - 11:00 AM\",\n  \"color\": \"#f97316\",\n  \"deliveryCharge\": 30,\n  \"minOrderAmount\": 200,\n  \"availableDays\": [\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"],\n  \"isActive\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Delivery Slot",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/deliverySlot/:id", "host": ["{{baseUrl}}"], "path": ["deliverySlot",":id"], "variable": [{ "key": "id", "value": "SLOT_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"deliveryCharge\": 40\n}" }
+          }
+        },
+        {
+          "name": "Toggle Delivery Slot Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/deliverySlot/:id/toggle", "host": ["{{baseUrl}}"], "path": ["deliverySlot",":id","toggle"], "variable": [{ "key": "id", "value": "SLOT_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Delivery Slot",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/deliverySlot/:id", "host": ["{{baseUrl}}"], "path": ["deliverySlot",":id"], "variable": [{ "key": "id", "value": "SLOT_ID" }] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Coupon",
+      "item": [
+        {
+          "name": "Validate Coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/coupon/validate", "host": ["{{baseUrl}}"], "path": ["coupon","validate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"SAVE50\",\n  \"orderAmount\": 500\n}" }
+          }
+        },
+        {
+          "name": "Get Coupon By ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/coupon/:id", "host": ["{{baseUrl}}"], "path": ["coupon",":id"], "variable": [{ "key": "id", "value": "COUPON_ID" }] }
+          }
+        },
+        {
+          "name": "Get All Coupons",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/coupon", "host": ["{{baseUrl}}"], "path": ["coupon"] }
+          }
+        },
+        {
+          "name": "Create Coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/coupon", "host": ["{{baseUrl}}"], "path": ["coupon"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"SAVE50\",\n  \"type\": \"flat\",\n  \"value\": 50,\n  \"minOrder\": 300,\n  \"usageLimit\": 100,\n  \"expiry\": \"2025-12-31\",\n  \"active\": true\n}" }
+          }
+        },
+        {
+          "name": "Update Coupon",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/coupon/:id", "host": ["{{baseUrl}}"], "path": ["coupon",":id"], "variable": [{ "key": "id", "value": "COUPON_ID" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"value\": 75\n}" }
+          }
+        },
+        {
+          "name": "Toggle Coupon Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/coupon/:id/toggle", "host": ["{{baseUrl}}"], "path": ["coupon",":id","toggle"], "variable": [{ "key": "id", "value": "COUPON_ID" }] }
+          }
+        },
+        {
+          "name": "Delete Coupon",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/coupon/:id", "host": ["{{baseUrl}}"], "path": ["coupon",":id"], "variable": [{ "key": "id", "value": "COUPON_ID" }] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Preview Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/preview", "host": ["{{baseUrl}}"], "path": ["orders","preview"] },
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    { \"productId\": \"PRODUCT_ID\", \"quantity\": 2 }\n  ],\n  \"deliverySlotId\": \"SLOT_ID\",\n  \"couponCode\": \"SAVE50\"\n}" }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders", "host": ["{{baseUrl}}"], "path": ["orders"] },
+            "body": { "mode": "raw", "raw": "{\n  \"items\": [\n    { \"productId\": \"PRODUCT_ID\", \"quantity\": 2 }\n  ],\n  \"deliverySlotId\": \"SLOT_ID\",\n  \"couponCode\": \"\",\n  \"paymentMethod\": \"COD\",\n  \"customerNote\": \"Please ring the bell\",\n  \"deliveryAddress\": {\n    \"fullName\": \"John Doe\",\n    \"phone\": \"9876543210\",\n    \"addressLine1\": \"123 Main Street\",\n    \"city\": \"Mumbai\",\n    \"state\": \"Maharashtra\",\n    \"pinCode\": \"400001\"\n  }\n}" }
+          }
+        },
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["orders"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "status", "value": "", "disabled": true }, { "key": "paymentStatus", "value": "", "disabled": true }, { "key": "search", "value": "", "disabled": true }] }
+          }
+        },
+        {
+          "name": "Get Order Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/stats", "host": ["{{baseUrl}}"], "path": ["orders","stats"] }
+          }
+        },
+        {
+          "name": "Get Order By ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/:orderId", "host": ["{{baseUrl}}"], "path": ["orders",":orderId"], "variable": [{ "key": "orderId", "value": "ORD-2025-000001" }] }
+          }
+        },
+        {
+          "name": "Cancel Order",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/:orderId/cancel", "host": ["{{baseUrl}}"], "path": ["orders",":orderId","cancel"], "variable": [{ "key": "orderId", "value": "ORD-2025-000001" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"reason\": \"Customer requested cancellation\"\n}" }
+          }
+        },
+        {
+          "name": "Update Order Status (Admin)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/:orderId/status", "host": ["{{baseUrl}}"], "path": ["orders",":orderId","status"], "variable": [{ "key": "orderId", "value": "ORD-2025-000001" }] },
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"Processing\",\n  \"note\": \"Order is being prepared\"\n}" }
+          }
+        },
+        {
+          "name": "Verify Razorpay Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/orders/payment/razorpay/verify", "host": ["{{baseUrl}}"], "path": ["orders","payment","razorpay","verify"] },
+            "body": { "mode": "raw", "raw": "{\n  \"orderId\": \"ORD-2025-000001\",\n  \"razorpay_order_id\": \"order_xxxxx\",\n  \"razorpay_payment_id\": \"pay_xxxxx\",\n  \"razorpay_signature\": \"signature_xxxxx\"\n}" }
+          }
+        },
+        {
+          "name": "Verify PayU Payment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/orders/payment/payu/verify", "host": ["{{baseUrl}}"], "path": ["orders","payment","payu","verify"] },
+            "body": { "mode": "raw", "raw": "{\n  \"orderId\": \"ORD-2025-000001\",\n  \"status\": \"success\",\n  \"txnid\": \"PAYU_xxxxx\",\n  \"mihpayid\": \"mihpay_xxxxx\",\n  \"amount\": \"499.00\",\n  \"hash\": \"hash_xxxxx\",\n  \"firstname\": \"John\",\n  \"email\": \"john@example.com\",\n  \"productinfo\": \"Dukekart Order\"\n}" }
+          }
+        }
+      ]
+    }
+  ]
+}

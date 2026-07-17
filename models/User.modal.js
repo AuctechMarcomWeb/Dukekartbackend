@@ -73,7 +73,7 @@ UserSchema.methods.matchPassword = async function (password) {
 
 UserSchema.methods.generateAuthToken = function () {
   const token = jwt.sign(
-    { userId: this._id, accountType: this.accountType },
+    { userId: this._id, role: this.role },
     process.env.JWT_SECRET
   );
   return token;

@@ -126,7 +126,7 @@ const verifyOtp = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       gender: user.gender,
-      accountType: user.accountType,
+      role: user.role,
       isNew: user.isNew,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

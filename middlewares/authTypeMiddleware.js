@@ -55,7 +55,7 @@ export const authorizeUserType = (...allowedTypes) => {
       }
 
       // Check if the user's accountType is in the allowedTypes array
-      if (!allowedTypes.includes(req.user.accountType)) {
+      if (!allowedTypes.includes(req.user.role)) {
         return apiError(res, 403, false, "Forbidden: You do not have access to this resource");
       }
 
