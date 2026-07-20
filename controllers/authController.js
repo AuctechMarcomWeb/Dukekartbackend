@@ -34,7 +34,7 @@ const registerOrLogin = asyncHandler(async (req, res) => {
     let user = await User.findOne({ phone });
 
     // OTP generate (special case for test number)
-    const otp = phone === "1111111111" ? "0101" : generateOTP();
+    const otp = phone === "1111111111" ? "123456" : generateOTP();
     const otpExpiration = new Date(Date.now() + OTP_EXPIRATION_TIME);
 
     await sendWhatsappOTP(phone, otp);
