@@ -5,6 +5,19 @@ import Order from "../../models/Order/Order.modal.js";
 import Product from "../../models/Product.modal.js";
 import Coupon from "../../models/Coupon.modal.js";
 import DeliverySlot from "../../models/DeliverySlot.modal.js";
+import { createOrderNotification } from "../notificationController.js";
+
+// ── Notification messages per status ─────────────────────────────────────────
+const STATUS_NOTIFICATIONS = {
+  "Confirmed":        { title: "✅ Order Confirmed",        msg: (id) => `Aapka order #${id} confirm ho gaya hai. Hum jaldi prepare karenge!` },
+  "Processing":       { title: "👨‍🍳 Order Prepare Ho Raha Hai", msg: (id) => `#${id} ki packing shuru ho gayi hai.` },
+  "Packed":           { title: "📦 Order Pack Ho Gaya",     msg: (id) => `Aapka order #${id} pack ho gaya aur dispatch ke liye ready hai.` },
+  "Out for Delivery": { title: "🛵 Order Out for Delivery", msg: (id) => `Delivery boy aapke order #${id} ke saath aa raha hai. Thodi der mein pahunch jayega!` },
+  "Delivered":        { title: "🎉 Order Deliver Ho Gaya",  msg: (id) => `Order #${id} successfully deliver ho gaya. Enjoy karein! App par rate zaroor karein. ⭐` },
+  "Cancelled":        { title: "❌ Order Cancel Ho Gaya",   msg: (id) => `Aapka order #${id} cancel ho gaya hai. Koi issue ho toh support se contact karein.` },
+  "Payment Failed":   { title: "⚠️ Payment Failed",         msg: (id) => `Order #${id} ki payment fail ho gayi. Dobara try karein ya doosra payment method use karein.` },
+  "Payment Pending":  { title: "⏳ Payment Pending",        msg: (id) => `Order #${id} place ho gaya. Payment complete karein taaki order confirm ho sake.` },
+};
 
 const getRazorpay = () => {
   if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
@@ -527,6 +540,12 @@ export const createOrder = async (req, res) => {
 
     const order = createdOrders[0];
 
+    // ── Push notification after order placed ──────────────────────────────────
+    const notifMeta = STATUS_NOTIFICATIONS[initialOrderStatus];
+    if (notifMeta) {
+      createOrderNotification(userId, notifMeta.title, notifMeta.msg(orderId), orderId);
+    }
+
     return success(
       res,
       201,
@@ -618,11 +637,15 @@ export const verifyRazorpayPayment = async (req, res) => {
 
       await order.save();
 
-      return failure(
-        res,
-        400,
-        "Payment verification failed"
+      // Notify user — payment failed
+      createOrderNotification(
+        order.user,
+        STATUS_NOTIFICATIONS["Payment Failed"].title,
+        STATUS_NOTIFICATIONS["Payment Failed"].msg(order.orderId),
+        order.orderId
       );
+
+      return failure(res, 400, "Payment verification failed");
     }
 
     order.paymentStatus = "Paid";
@@ -642,12 +665,15 @@ export const verifyRazorpayPayment = async (req, res) => {
 
     await order.save();
 
-    return success(
-      res,
-      200,
-      "Payment verified and order confirmed",
-      order
+    // Notify user — payment successful, order confirmed
+    createOrderNotification(
+      order.user,
+      STATUS_NOTIFICATIONS["Confirmed"].title,
+      STATUS_NOTIFICATIONS["Confirmed"].msg(order.orderId),
+      order.orderId
     );
+
+    return success(res, 200, "Payment verified and order confirmed", order);
   } catch (error) {
     return failure(
       res,
@@ -718,11 +744,15 @@ export const verifyPayUPayment = async (req, res) => {
 
       await order.save();
 
-      return failure(
-        res,
-        400,
-        "PayU payment verification failed"
+      // Notify user — PayU payment failed
+      createOrderNotification(
+        order.user,
+        STATUS_NOTIFICATIONS["Payment Failed"].title,
+        STATUS_NOTIFICATIONS["Payment Failed"].msg(order.orderId),
+        order.orderId
       );
+
+      return failure(res, 400, "PayU payment verification failed");
     }
 
     order.paymentStatus = "Paid";
@@ -740,12 +770,15 @@ export const verifyPayUPayment = async (req, res) => {
 
     await order.save();
 
-    return success(
-      res,
-      200,
-      "PayU payment verified successfully",
-      order
+    // Notify user — PayU payment successful
+    createOrderNotification(
+      order.user,
+      STATUS_NOTIFICATIONS["Confirmed"].title,
+      STATUS_NOTIFICATIONS["Confirmed"].msg(order.orderId),
+      order.orderId
     );
+
+    return success(res, 200, "PayU payment verified successfully", order);
   } catch (error) {
     return failure(
       res,
@@ -1051,12 +1084,13 @@ export const updateOrderStatus = async (req, res) => {
 
     await order.save();
 
-    return success(
-      res,
-      200,
-      "Order status updated successfully",
-      order
-    );
+    // ── Notify customer about status change ───────────────────────────────────
+    const notifMeta = STATUS_NOTIFICATIONS[status];
+    if (notifMeta && order.user) {
+      createOrderNotification(order.user, notifMeta.title, notifMeta.msg(order.orderId), order.orderId);
+    }
+
+    return success(res, 200, "Order status updated successfully", order);
   } catch (error) {
     return failure(
       res,
@@ -1188,12 +1222,15 @@ export const cancelOrder = async (req, res) => {
 
     await session.commitTransaction();
 
-    return success(
-      res,
-      200,
-      "Order cancelled successfully",
-      order
+    // ── Notify customer about cancellation ────────────────────────────────────
+    createOrderNotification(
+      order.user,
+      STATUS_NOTIFICATIONS["Cancelled"].title,
+      STATUS_NOTIFICATIONS["Cancelled"].msg(order.orderId),
+      order.orderId
     );
+
+    return success(res, 200, "Order cancelled successfully", order);
   } catch (error) {
     await session.abortTransaction();
 
