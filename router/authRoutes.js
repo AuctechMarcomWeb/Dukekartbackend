@@ -18,6 +18,7 @@ import {
   authorizeUserType,
   verifyJWT,
 } from "../middlewares/authTypeMiddleware.js";
+import { saveFCMToken, deleteFCMToken } from "../controllers/fcmController.js";
 
 const routes = Router();
 
@@ -40,5 +41,9 @@ routes.route("/getAllUsers").get(getAllUsers);
 routes.route("/updateRole/:userId").put(updateUserRole);
 
 routes.route("/createUser").post(createUser);
+
+// ── FCM Token ────────────────────────────────────────────────────────────────
+routes.route("/fcm-token").post(verifyJWT, saveFCMToken);
+routes.route("/fcm-token").delete(verifyJWT, deleteFCMToken);
 
 export default routes;

@@ -1,6 +1,7 @@
 import Notification from "../models/Notification.modal.js";
 import User from "../models/User.modal.js";
 import { apiResponse } from "../utils/apiResponse.js";
+import { sendPushNotification, sendMulticastNotification } from "../utils/sendPushNotification.js";
 
 // ── GET /api/notifications — user's own + broadcasts ──────────────────────
 export const getNotifications = async (req, res) => {
@@ -109,6 +110,7 @@ export const sendNotification = async (req, res) => {
       return res.status(400).json(new apiResponse(400, null, "userId required for non-broadcast notifications"));
     }
 
+    // ── Save to DB ────────────────────────────────────────────────────────
     const notification = await Notification.create({
       user: isBroadcast ? null : userId,
       title,
@@ -117,6 +119,38 @@ export const sendNotification = async (req, res) => {
       orderId: orderId || "",
       isBroadcast,
     });
+
+    // ── Send FCM Push ─────────────────────────────────────────────────────
+    const pushData = {
+      type:    type || "system",
+      orderId: orderId || "",
+      notificationId: notification._id.toString(),
+    };
+
+    if (isBroadcast) {
+      // Fetch all users with an fcmToken
+      const users = await User.find({ fcmToken: { $exists: true, $ne: "" } })
+        .select("fcmToken")
+        .lean();
+      const tokens = users.map(u => u.fcmToken).filter(Boolean);
+      if (tokens.length > 0) {
+        await sendMulticastNotification({ tokens, title, body: message, data: pushData });
+      }
+    } else {
+      const targetUser = await User.findById(userId).select("fcmToken").lean();
+      if (targetUser?.fcmToken) {
+        const result = await sendPushNotification({
+          token: targetUser.fcmToken,
+          title,
+          body: message,
+          data: pushData,
+        });
+        // Clear invalid token from DB
+        if (result === "INVALID_TOKEN") {
+          await User.findByIdAndUpdate(userId, { $unset: { fcmToken: "" } });
+        }
+      }
+    }
 
     return res.status(201).json(new apiResponse(201, notification, "Notification sent"));
   } catch (err) {
@@ -148,6 +182,20 @@ export const createOrderNotification = async (userId, title, message, orderId = 
       orderId,
       isBroadcast: false,
     });
+
+    // Send FCM push to user's device
+    const user = await User.findById(userId).select("fcmToken").lean();
+    if (user?.fcmToken) {
+      const result = await sendPushNotification({
+        token: user.fcmToken,
+        title,
+        body: message,
+        data: { type: "order", orderId: String(orderId) },
+      });
+      if (result === "INVALID_TOKEN") {
+        await User.findByIdAndUpdate(userId, { $unset: { fcmToken: "" } });
+      }
+    }
   } catch (_) {
     // Non-critical — don't throw
   }
