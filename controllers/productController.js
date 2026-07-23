@@ -54,6 +54,11 @@ const createProduct = asyncHandler(async (req, res) => {
     inStock,
     deliveryTime,
     nutrition,
+    isBestSeller,
+    isFlashSale,
+    isTrending,
+    isRecommended,
+    flashSaleEndsAt,
   } = req.body;
 
 
@@ -219,6 +224,12 @@ const createProduct = asyncHandler(async (req, res) => {
     deliveryTime:
       deliveryTime?.trim() || "30-40 min",
 
+    isBestSeller:  isBestSeller  ?? false,
+    isFlashSale:   isFlashSale   ?? false,
+    isTrending:    isTrending    ?? false,
+    isRecommended: isRecommended ?? false,
+    flashSaleEndsAt: flashSaleEndsAt || null,
+
   });
 
 
@@ -330,13 +341,28 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 // ─── GET ACTIVE PRODUCTS FOR WEB (public route) ───────────────────────────────
 // Returns only Active products under Active categories
+// Supports section filter: ?section=bestseller|flashsale|trending|recommended
 const getActiveProducts = asyncHandler(async (req, res) => {
-  const { category, sortBy = "recent" } = req.query;
+  const { category, sortBy = "recent", section } = req.query;
 
   const filter = { isActive: true, status: "Active" };
 
   if (category && isValidObjectId(category)) {
     filter.category = new mongoose.Types.ObjectId(category);
+  }
+
+  // ── Section filters (admin-tagged) ──────────────────────────────────────
+  if (section === "bestseller")  filter.isBestSeller  = true;
+  if (section === "flashsale")   filter.isFlashSale   = true;
+  if (section === "trending")    filter.isTrending    = true;
+  if (section === "recommended") filter.isRecommended = true;
+
+  // Flash sale: only products where timer hasn't expired
+  if (section === "flashsale") {
+    filter.$or = [
+      { flashSaleEndsAt: null },
+      { flashSaleEndsAt: { $gt: new Date() } },
+    ];
   }
 
   const sortMap = {
@@ -424,6 +450,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     "nutrition","stock","rating","reviewCount","status",
     "tags","allowedSlots","isHalal","isFresh","inStock",
     "deliveryTime","isActive",
+    "isBestSeller","isFlashSale","isTrending","isRecommended","flashSaleEndsAt",
   ];
 
   for (const field of allowed) {

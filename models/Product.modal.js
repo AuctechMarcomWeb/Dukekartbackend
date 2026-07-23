@@ -142,6 +142,15 @@ const productSchema = new mongoose.Schema(
       default: [],
     },
 
+    // ── Home Section Flags (admin controlled) ────────────────────────────────
+    isBestSeller:  { type: Boolean, default: false },
+    isFlashSale:   { type: Boolean, default: false },
+    isTrending:    { type: Boolean, default: false },
+    isRecommended: { type: Boolean, default: false },
+
+    // Flash Sale countdown end time — null means no active timer
+    flashSaleEndsAt: { type: Date, default: null },
+
     // ── Visibility ───────────────────────────────────────────────────────────
     isActive: {
       type: Boolean,
