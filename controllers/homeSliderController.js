@@ -39,12 +39,6 @@ const createHomeSlider = asyncHandler(async (req, res) => {
     endDate,
   } = req.body;
 
-  if (!title?.trim()) {
-    return res
-      .status(400)
-      .json(new apiResponse(400, null, "Title is required"));
-  }
-
   if (!image?.trim()) {
     return res
       .status(400)
@@ -81,7 +75,7 @@ const createHomeSlider = asyncHandler(async (req, res) => {
 
 
   const banner = await HomeSlider.create({
-    title: title.trim(),
+    title: title?.trim() || "",
     subtitle: subtitle?.trim() || "",
     offer: offer?.trim() || "",
     cta: cta?.trim() || "Shop Now",
@@ -257,12 +251,6 @@ const updateHomeSlider = asyncHandler(async (req, res) => {
     if (req.body[field] !== undefined) {
       updateData[field] = trimString(req.body[field]);
     }
-  }
-
-  if (updateData.title === "") {
-    return res
-      .status(400)
-      .json(new apiResponse(400, null, "Title cannot be empty"));
   }
 
   if (updateData.image === "") {

@@ -13,8 +13,8 @@ const homeSliderSchema = new mongoose.Schema(
    
     title: {
       type: String,
-      required: true,
       trim: true,
+      default: '',
     },
 
     subtitle: {
