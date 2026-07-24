@@ -13,8 +13,8 @@ const syncProductRating = async (productId) => {
   const avg   = result[0]?.avg   ?? 0;
   const count = result[0]?.count ?? 0;
   await Product.findByIdAndUpdate(productId, {
-    rating:  Math.round(avg * 10) / 10,
-    reviews: count,
+    rating:      Math.round(avg * 10) / 10,
+    reviewCount: count,   // ← correct field name from Product model
   });
 };
 
